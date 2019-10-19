@@ -18,8 +18,53 @@
 // TODO: Use conatiner-iterator design pattern!
 
 namespace duckx {
+  namespace detail {
+    template <typename Derived>
+    class iterator_facade {
+        Derived& derived() noexcept {
+          return static_cast<Derived&>(*this);
+        }
+        const Derived& derived() const noexcept {
+          return static_cast<Derived&>(*this);
+        }
+    public:
+        struct sentinel_t{} sentinel;
+        Derived& operator*() {
+          return derived();
+        }
+        Derived& operator++() {
+          derived().next();
+          return derived();
+        }
+        Derived operator++(int) {
+          auto tmp(*this);
+          ++(*this);
+          return tmp;
+        }
+        Derived& begin() noexcept {
+          return derived();
+        }
+        const Derived& begin() const noexcept {
+          return derived();
+        }
+        sentinel_t end() noexcept {
+          return {};
+        }
+        sentinel_t end() const noexcept {
+          return {};
+        }
+        friend bool operator==(Derived& d, sentinel_t s) noexcept {
+          return !d.has_next(); // has_next() should be const
+        }
+        friend bool operator!=(Derived& d, sentinel_t s) noexcept {
+          return d.has_next();
+        }
+    };
+    }
+
     // Run contains runs in a paragraph
-    class Run {
+    class Run : public detail::iterator_facade<Run> {
+        friend class detail::iterator_facade<Run>;
     private:
         // Store the parent node (a paragraph)
         pugi::xml_node parent;
@@ -42,7 +87,8 @@ namespace duckx {
 
     // Paragraph contains a paragraph
     // and stores runs
-    class Paragraph {
+    class Paragraph : public detail::iterator_facade<Paragraph> {
+        friend class detail::iterator_facade<Paragraph>;
     private:
         // Store parent node (usually the body node)
         pugi::xml_node parent;
@@ -67,7 +113,8 @@ namespace duckx {
     };
 
 	// TableCell contains one or more paragraphs
-	class TableCell {
+	class TableCell : public detail::iterator_facade<TableCell> {
+	    friend class detail::iterator_facade<TableCell>;
 	private:
 		pugi::xml_node parent;
 		pugi::xml_node current;
@@ -87,7 +134,8 @@ namespace duckx {
 	};
 
 	// TableRow consists of one or more TableCells
-	class TableRow {
+	class TableRow : public detail::iterator_facade<TableRow> {
+	    friend class detail::iterator_facade<TableRow>;
 		pugi::xml_node parent;
 		pugi::xml_node current;
 
@@ -105,7 +153,8 @@ namespace duckx {
 	};
 
 	// Table consists of one or more TableRow objects
-	class Table {
+	class Table : public detail::iterator_facade<Table> {
+	    friend class detail::iterator_facade<Table>;
 	private:
 		pugi::xml_node parent;
 		pugi::xml_node current;

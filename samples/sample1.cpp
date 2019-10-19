@@ -3,11 +3,11 @@
 using namespace std;
 
 int main() {
-    duckx::Document doc("my_test.docx");
+    duckx::Document doc("/home/semir/Programme/DuckX_Fork/DuckX/samples/my_test.docx");
     doc.open();
 
-    for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
-        for (auto r = p.runs(); r.has_next(); r.next()) {
+    for (auto p : doc.paragraphs()) {
+        for (auto r : p.runs()) {
             cout << r.get_text() << endl;
         }
     }

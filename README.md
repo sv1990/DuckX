@@ -22,12 +22,12 @@ Here's an example of how to use duckx to read a docx file; It opens a docx file 
 
 int main() {
 
-    duckx::Document doc("file.docx");   
+    duckx::Document doc("file.docx");
 
     doc.open();
 
-    for (auto p = doc.paragraphs(); p.has_next() ; p.next()) {
-	for (auto r = p.runs(); r.has_next(); r.next()) {
+    for (auto p : doc.paragraphs()) {
+        for (auto r : p.runs()) {
             std::cout << r.text() << std::endl;
         }
     }

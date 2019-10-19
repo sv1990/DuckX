@@ -14,6 +14,7 @@ if(BUILD_SHARED_LIBS)
 else()
     add_library(duckx STATIC ${HEADERS} ${SOURCES})
 endif()
+target_compile_features(duckx PUBLIC cxx_std_17)
 
 mark_as_advanced(CLEAR CMAKE_INSTALL_LIBDIR CMAKE_INSTALL_INCLUDEDIR)
 
